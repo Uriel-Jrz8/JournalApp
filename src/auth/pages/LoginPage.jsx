@@ -11,21 +11,21 @@ import { useMemo } from 'react';
 
 export const LoginPage = () => {
 
-    const dispatch = useDispatch()
-
-    const { status } = useSelector( state => state.auth)
-
+    
+    const { status } = useSelector( state => state.auth);
+    
+    const dispatch = useDispatch();
     const { email, password, onInputChange } = useForm({
         email: 'uriel@corma.com',
         password: '123456'
     });
 
-    const isAutenthicate = useMemo( () => status === 'checking', [status]) //guardadon el valor de autenticacion si esta ligin o no 
+    const isAutenthicate = useMemo( () => status === 'checking', [status]) //guardadon el valor de autenticacion si esta login o no 
 
     const onSubmit = (event) => {
         event.preventDefault();
-        console.log({ email, password });
-        dispatch(checkingAuthentication());
+        console.log( { email, password } );
+        dispatch( checkingAuthentication() );
     }
 
     const onGoogleSigIn = () =>{
@@ -46,7 +46,8 @@ export const LoginPage = () => {
                             type="email"
                             placeholder="correo@dominio.com"
                             name="email"
-                            fullWidth value={email}
+                            fullWidth
+                            value={email}
                             onChange={onInputChange}
                             >
                         </TextField>
