@@ -1,30 +1,50 @@
 import { Link as RouterLink } from 'react-router-dom';
-import { Button, Grid, Link, TextField, Typography } from '@mui/material';
+import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { AuthLayout } from '../layout/AuthLayout';
 import { useForm } from '../../hooks';
+import { useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { startCreatingUser } from '../../store/auth/thunks';
 
 
 
     const formData= {
-        email: 'urieljuarez@gmail.com',
-        password: '123456',
-        displayName: 'Alexis Uriel',
+        email: '',
+        password: '',
+        displayName: '',
+    }
+
+    const formValidations = {
+        email: [ ( value ) =>  value.includes('@') , 'El correo debe tener un @'],
+        password: [ ( value ) =>  value.length >= 6 , 'El password debe tener más de 6 caracteres'],
+        displayName: [ ( value ) =>  value.length >= 1 , 'El nombre es obligatorio'],        
     }
 
 export const RegisterPage = () => { 
 
-    const { displayName, email, password, onInputChange, formState } = useForm(formData);
+    const dispatch = useDispatch();
+    const [formSubmitted, setformSubmitted] = useState(false);
+    
+    const { status, errorMessage } = useSelector( state => state.auth);
+    const  isChekingAuthentication = useMemo( () => status === 'checking', [status] ); 
+
+
+    const { formState, displayName, email, password, onInputChange,
+            isFormValid, displayNameValid, emailValid, passwordValid,
+        } = useForm(formData, formValidations);
 
     const onSubmitRegister = ( event ) => {
         event.preventDefault();
-        console.log(formState)
+        setformSubmitted(true);
+        if( !isFormValid ) return;
+        console.log(formState);
+        dispatch(startCreatingUser(formState));
     }
-
 
 
     return (
         <AuthLayout title='Crear una Cuenta'>
-            <form onSubmit={ onSubmitRegister }>
+            <form onSubmit={ onSubmitRegister } className="animate__animated animate__fadeIn animate__faster">
                 <Grid container>
                     <Grid item xs={12} sx={{ mt: 2 }}>
                         <TextField
@@ -35,18 +55,22 @@ export const RegisterPage = () => {
                         name="displayName"
                         value={ displayName }
                         onChange={onInputChange}
+                        error= { !!displayNameValid && formSubmitted}
+                        helperText = { displayNameValid }
                         >
                         </TextField>
                     </Grid>
                     <Grid item xs={12} sx={{ mt: 2 }}>
                         <TextField
-                        label="Correo"
+                        label="Correo Electronico"
                         type="email"
                         placeholder="correo@dominio.com"
                         fullWidth
                         name="email"
                         value={ email }
                         onChange={onInputChange}
+                        error= { !!emailValid && formSubmitted }
+                        helperText = { emailValid }
                         >
                         </TextField>
                     </Grid>
@@ -59,12 +83,20 @@ export const RegisterPage = () => {
                         name="password"
                         value={ password }
                         onChange={onInputChange}
+                        error= { !!passwordValid && formSubmitted }
+                        helperText = { passwordValid }
                         >
                         </TextField>
                     </Grid>
                     <Grid container spacing={2} sx={{ mb: 2, mt: 1 }}>
+                    <Grid item xs={12} display={ !!errorMessage ? '' : 'none'}>
+                        <Alert severity='error'>
+                            {errorMessage}
+                        </Alert>
+                    </Grid>
                         <Grid item xs={12}>
                             <Button
+                                disabled = {isChekingAuthentication}
                                 variant="contained"
                                 fullWidth
                                 type="submit"
