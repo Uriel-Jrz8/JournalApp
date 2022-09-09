@@ -11,7 +11,7 @@ export const NoteView = () => {
     return (
         <Grid container direction="row" justifyContent="space-between" alignItems="center" sx={{mb:1}} className="animate__animated animate__fadeIn animate__faster">
             <Grid item >
-                <Typography fontSize={39} color="black"> Agosto ......</Typography>
+                <Typography fontSize={39} fontWeight="light"> Agosto ......</Typography>
             </Grid>
             <Grid item>
                 <Button color="primary" sx={{padding:2}}>

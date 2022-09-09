@@ -1,28 +1,38 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { collection, doc, setDoc } from "firebase/firestore/lite";
+import { FirebaseDB } from "../../firebase/config";
+import { loadNotes } from "../../helpers";
+import { addNewEmpyNote, setActiveNote, SavingNewNote, setNotes } from "./";
 
-export const journalSlice = createSlice({
-    name: 'journal',
-    initialState: {
-        isSaiving: true,
-        messageSaved: '',
-        notes: [],
-        active: null,
-/*         active: {
-            id:  'ABC',
+
+
+export const startNewNote = () => {
+    return async (dispatch, getState) => {
+
+        dispatch(SavingNewNote());
+        const { uid } = getState().auth;
+
+        const newNote = {
             title: '',
-            body:'',
-            date: 123,
-            imagesUrls: []
-        } */
+            body: '',
+            date: new Date().getTime(),
+        }
 
-    },
-    reducers: {
-        increment: (state, /* action */) => {
-            state.counter += 1;
-        },
+        const newDoc = doc(collection(FirebaseDB, `${uid}/journal/notes`));
+        const resp = await setDoc(newDoc, newNote);
+        newNote.id = newDoc.id;
+
+        dispatch(addNewEmpyNote(newNote));
+        dispatch(setActiveNote(newNote));
     }
-});
+}
 
 
-// Action creators are generated for each case reducer function
-export const { increment } = journalSlice.actions;
+export const startLoadingNotes = () => {
+    return async (dispatch, getState) => {
+        
+        const { uid } = getState().auth;
+        if(!uid) throw new Error('El UID del usurio no existe');
+        const notes = await loadNotes(uid);
+        dispatch(setNotes(notes));
+    }
+} 
