@@ -9,6 +9,11 @@ export const useForm = (initialForm = {}, formValidations = {} ) => {
         createValidators();
     }, [ formState ])
 
+    useEffect(() => { //sirve para que aparezca la informacion de la nuevanota que es seleccionada 
+        setFormState(initialForm);
+        
+    }, [initialForm])
+
 
     const isFormValid = useMemo( () => {
         for (const formValue of Object.keys( formValidation )) {

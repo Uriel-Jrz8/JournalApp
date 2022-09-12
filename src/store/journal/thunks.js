@@ -36,3 +36,12 @@ export const startLoadingNotes = () => {
         dispatch(setNotes(notes));
     }
 } 
+
+
+
+export const startSavingNote = () =>{
+    return async(dispatch,getState) =>{
+        
+        const notes = await loadNotes(uid);
+    }
+}
