@@ -2,6 +2,7 @@ import { collection, doc, setDoc } from "firebase/firestore/lite";
 import { FirebaseDB } from "../../firebase/config";
 import { loadNotes } from "../../helpers";
 import { addNewEmpyNote, setActiveNote, SavingNewNote, setNotes } from "./";
+import { setSaving,updatedNote } from "./journalSlice";
 
 
 
@@ -37,11 +38,27 @@ export const startLoadingNotes = () => {
     }
 } 
 
-
-
 export const startSavingNote = () =>{
     return async(dispatch,getState) =>{
-        
+
         const notes = await loadNotes(uid);
+    }
+}
+
+//funcion pra actualizar y manda a grabar en la BD los datos de una nota.
+export const startSaveNote = () => {
+    return async( dispatch, getState) => {
+
+        dispatch(setSaving());
+
+        const { uid } =  getState().auth;
+        const { active: notaActiva } = getState().journal;
+        const noteToFireStore = { ...notaActiva};
+        delete noteToFireStore.id
+
+        const docRef  = doc( FirebaseDB, `${ uid }/journal/notes/${ notaActiva.id }` );
+        await setDoc( docRef, noteToFireStore, { merge: true  } )
+
+        dispatch( updatedNote(notaActiva) );
     }
 }
