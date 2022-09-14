@@ -12,7 +12,7 @@ export const journalSlice = createSlice({
                     title: '',
                     body:'',
                     date: 123,
-                    u: []
+                    imageUrls: []
                 } */
 
     },
@@ -43,17 +43,31 @@ export const journalSlice = createSlice({
                 }
                 return note;
             });
-
             //mostrat mensaje de actualizacion
             state.messageSaved = `${ action.payload.title}, actulizada correctamente`;
             
         },
-        deleteNoteByID: (state, action) => {
+        setPhotosToActiveNote: (state, action) => {
+            state.active.imagesUrls = [ ...state.active.imagesUrls, ...action.payload ];
+            state.isSaiving = false;
 
+        },
+
+        clearNotesLogout: (state) =>{
+            state.isSaiving = false;
+            state.messageSaved = '';
+            state.notes=[];
+            state.active = null;
+
+        },
+        deleteNoteByID: (state, action) => {
+            state.active = null;
+            state.notes = state.notes.filter(notes => notes.id !== action.payload);
+            
         },
     }
 });
 
 
 // Action creators are generated for each case reducer function
-export const { addNewEmpyNote, setActiveNote, setNotes, setSaving, updatedNote, deleteNoteByID,SavingNewNote } = journalSlice.actions;
+export const { addNewEmpyNote, setActiveNote, setNotes, setSaving, updatedNote, deleteNoteByID,SavingNewNote,setPhotosToActiveNote,clearNotesLogout } = journalSlice.actions;
